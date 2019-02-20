@@ -1,66 +1,12 @@
 <template>
   <div class="home">
-    <h1>New Recipe</h1>
-    <div>
-      <div>
-        Title: <input v-model="newRecipeTitle">
-      </div>
-      <div>
-        Chef: <input v-model="newRecipeChef">
-      </div>
-      <div>
-        Prep Time: <input v-model="newRecipePrepTime">
-      </div>
-      <div>
-        Ingredients: <input v-model="newRecipeIngredients">
-      </div>
-      <div>
-        Directions: <input v-model="newRecipeDirections">
-      </div>
-      <div>
-        Image URL: <input v-model="newRecipeImageUrl">
-      </div>
-      <button v-on:click="createRecipe()">Create</button>
-    </div>
 
     <h1>All Recipes</h1>
     <div v-for="recipe in recipes">
       <h2>{{ recipe.title }}</h2>
-      <img v-bind:src="recipe.image_url" v-bind:alt="recipe.title">
-      <div>
-        <button v-on:click="showRecipe(recipe)">More Info</button>
-      </div>
-      <div v-if="recipe === currentRecipe">
-        <p>Prep Time: {{ recipe.prep_time }}</p>
-        <p>Ingredients: {{ recipe.ingredients }}</p>
-        <p>Directions: {{ recipe.directions }}</p>
-
-        <div>
-          <h4>Edit Recipe</h4>
-          <div>
-            <div>
-              Title: <input v-model="recipe.title">
-            </div>
-            <div>
-              Chef: <input v-model="recipe.chef">
-            </div>
-            <div>
-              Prep Time: <input v-model="recipe.prep_time">
-            </div>
-            <div>
-              Ingredients: <input v-model="recipe.ingredients">
-            </div>
-            <div>
-              Directions: <input v-model="recipe.directions">
-            </div>
-            <div>
-              Image URL: <input v-model="recipe.image_url">
-            </div>
-            <button v-on:click="updateRecipe(recipe)" class="btn btn-success">Update</button>
-            <button v-on:click="destroyRecipe(recipe)" class="btn btn-primary">Delete</button>
-          </div>
-        </div>
-      </div>
+      <router-link v-bind:to="'/recipes/' + recipe.id">
+        <img v-bind:src="recipe.image_url" v-bind:alt="recipe.title">
+      </router-link>
     </div>
   </div>
 </template>
@@ -77,12 +23,6 @@ export default {
   data: function() {
     return {
       recipes: [],
-      newRecipeTitle: "",
-      newRecipeChef: "",
-      newRecipePrepTime: "",
-      newRecipeIngredients: "",
-      newRecipeDirections: "",
-      newRecipeImageUrl: "",
       currentRecipe: {}
     };
   },
@@ -93,29 +33,6 @@ export default {
       });
   },
   methods: {
-    showRecipe: function(inputRecipe) {
-      if (this.currentRecipe === inputRecipe) {
-        this.currentRecipe = {};
-      } else {
-        this.currentRecipe = inputRecipe;
-      }
-    },
-    createRecipe: function() {
-      console.log("Create the Recipe...");
-      var params = {
-                    title: this.newRecipeTitle,
-                    chef: this.newRecipeChef,
-                    prep_time: this.newRecipePrepTime,
-                    ingredients: this.newRecipeIngredients,
-                    directions: this.newRecipeDirections,
-                    image_url: this.newRecipeImageUrl
-                    };
-      axios.post("/api/recipes", params)
-        .then(response => {
-          console.log("Success", response.data);
-          this.recipes.push(response.data);
-        });
-    },
     updateRecipe: function(inputRecipe) {
       var params = {
                     title: inputRecipe.title,
