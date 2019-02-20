@@ -20,9 +20,10 @@
       <div>
         Image URL: <input v-model="newRecipeImageUrl">
       </div>
-      <button v-on:click="createRecipe">Create</button>
+      <button v-on:click="createRecipe()">Create</button>
     </div>
-    <h1>ALL Recipes</h1>
+
+    <h1>All Recipes</h1>
     <div v-for="recipe in recipes">
       <h2>{{ recipe.title }}</h2>
       <img v-bind:src="recipe.image_url" v-bind:alt="recipe.title">
@@ -30,9 +31,10 @@
         <button v-on:click="showRecipe(recipe)">More Info</button>
       </div>
       <div v-if="recipe === currentRecipe">
-        <p>Prep Time: {{ recipe.prep_time }}</p> 
-        <p>Ingredients: {{ recipe.ingredients }}</p> 
-        <p>Directions: {{ recipe.directions }}</p>  
+        <p>Prep Time: {{ recipe.prep_time }}</p>
+        <p>Ingredients: {{ recipe.ingredients }}</p>
+        <p>Directions: {{ recipe.directions }}</p>
+
         <div>
           <h4>Edit Recipe</h4>
           <div>
@@ -54,9 +56,9 @@
             <div>
               Image URL: <input v-model="recipe.image_url">
             </div>
-            <button v-on:click="updateRecipe(recipe)">Update</button>
-            <button v-on:click="destroyRecipe(recipe)">Delete</button>
-          </div>     
+            <button v-on:click="updateRecipe(recipe)" class="btn btn-success">Update</button>
+            <button v-on:click="destroyRecipe(recipe)" class="btn btn-primary">Delete</button>
+          </div>
         </div>
       </div>
     </div>
@@ -65,13 +67,12 @@
 
 <style>
   img{
-  width: 250px;
+    width: 250px;
   }
 </style>
 
 <script>
 var axios = require('axios');
-
 export default {
   data: function() {
     return {
@@ -86,50 +87,49 @@ export default {
     };
   },
   created: function() {
-    axios.get('/api/recipes')
-    .then(response => {
-      this.recipes = response.data;
-    });
+    axios.get("/api/recipes")
+      .then(response => {
+        this.recipes = response.data;
+      });
   },
   methods: {
     showRecipe: function(inputRecipe) {
       if (this.currentRecipe === inputRecipe) {
-      this.currentRecipe = {}; 
+        this.currentRecipe = {};
       } else {
         this.currentRecipe = inputRecipe;
       }
     },
-    createRecipe: function(){
-      console.log("Create the Recipe..");
-      var params={
-                  title: this.newRecipeTitle,
-                  chef: this.newRecipeChef,
-                  prep_time: this.newRecipePrepTime,
-                  ingredients: this.newRecipeIngredients,
-                  directions: this.newRecipeDirections,
-                  image_url: this.newRecipeImageUrl
-                  };
-      console.log(params);
+    createRecipe: function() {
+      console.log("Create the Recipe...");
+      var params = {
+                    title: this.newRecipeTitle,
+                    chef: this.newRecipeChef,
+                    prep_time: this.newRecipePrepTime,
+                    ingredients: this.newRecipeIngredients,
+                    directions: this.newRecipeDirections,
+                    image_url: this.newRecipeImageUrl
+                    };
       axios.post("/api/recipes", params)
         .then(response => {
           console.log("Success", response.data);
           this.recipes.push(response.data);
-        });            
+        });
     },
     updateRecipe: function(inputRecipe) {
-      var paramas = {
-                     title: inputRecipe.title,   
-                     chef: inputRecipe.chef,
-                     prep_time: inputRecipe.prep_time,
-                     ingredients: inputRecipe.ingredients,
-                     directions: inputRecipe.directions,
-                     image_url: inputRecipe.image_url
+      var params = {
+                    title: inputRecipe.title,
+                    chef: inputRecipe.chef,
+                    prep_time: inputRecipe.prep_time,
+                    ingredients: inputRecipe.ingredients,
+                    directions: inputRecipe.directions,
+                    image_url: inputRecipe.image_url
                     };
       axios.patch("/api/recipes/" + inputRecipe.id, params)
         .then(response => {
           console.log("success", response.data);
           inputRecipe = response.data;
-        });              
+        });
     },
     destroyRecipe: function(inputRecipe) {
       axios.delete("/api/recipes/" + inputRecipe.id)
