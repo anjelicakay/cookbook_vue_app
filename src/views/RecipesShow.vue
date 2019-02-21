@@ -1,10 +1,23 @@
 <template>
   <div class="recipes-show">
+    <img v-bind:src="recipe.image_url" :alt="recipe.title">
     <h1>{{ recipe.title }}</h1>
     <h4>Chef: {{ recipe.chef }}</h4>
     <h4>Prep Time: {{ recipe.formatted.prep_time }}</h4>
-    <h4>Ingredients: {{ recipe.ingredients }}</h4>
-    <h4>Directions: {{ recipe.directions }}</h4>
+    <h4>Ingredients:</h4>
+
+    <ul>
+      <li v-for="ingredient in recipe.formatted.ingredients">{{ ingredient }} </li>
+    </ul>
+
+    <h4>Directions:</h4>
+
+    <ul>
+      <li v-for="direction in recipe.formatted.directions">{{ direction }}</li>
+    </ul>
+
+    <router-link class="btn btn-primary" v-bind:to="'/recipes/' + recipe.id + '/edit'">Edit</router-link>
+    <button class="btn btn-primary" v-on:click="destroyRecipe()">Delete</button>
   </div>
 </template>
 
@@ -21,10 +34,10 @@ export default{
       recipe: {
               id: "",
               title: "",
-              chef:"Josh",
+              chef:"",
               ingredients: "",
               directions: "",
-              prep_time:400,
+              prep_time: "",
               image_url: "",
               formatted:{
                 ingredients: [],
@@ -41,6 +54,14 @@ export default{
         this.recipe = response.data;
       });
   },
-  methods: {}
+  methods: {
+    destroyRecipe: function() {
+      axios.delete("/api/recipes/" + this.recipe.id)
+        .then(response => {
+          console.log("Success", response.data);
+          this.$router.push('/');
+        });
+    }
+  }
 }
 </script>
